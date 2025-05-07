@@ -1,13 +1,28 @@
-all: calculator
+# Compiler
+CXX = g++
+# Compiler flags
+CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic
 
-calculator: main.o calculator.o
-	g++ -o calculator main.o calculator.o
+# Executable name
+TARGET = calculator_program
 
-main.o: main.cpp calculator.hpp
-	g++ -c main.cpp
+# Source files
+SRCS = main.cpp calculator.cpp
 
-calculator.o: calculator.cpp calculator.hpp
-	g++ -c calculator.cpp
+# Object files
+OBJS = $(SRCS:.cpp=.o)
 
+# Default rule: Build the program
+all: $(TARGET)
+
+# Linking step
+$(TARGET): $(SRCS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+# Compile each .cpp to .o
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Clean build files
 clean:
-	rm -f *.o calculator
+	rm -f $(OBJS) $(TARGET)
