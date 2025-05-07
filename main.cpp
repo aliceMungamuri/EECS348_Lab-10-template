@@ -1,74 +1,70 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <cctype>
-
 #include "calculator.hpp"
+using namespace std;
+bool validDouble(const string& str){
+    int len = str.length();
+    if(len == 0){
+        return false;
+    }
+    int i = 0;
 
-// Helper to trim whitespace
-std::string trim(const std::string &s) {
-    size_t start = s.find_first_not_of(" \t\r\n");
-    size_t end = s.find_last_not_of(" \t\r\n");
-    return (start == std::string::npos) ? "" : s.substr(start, end - start + 1);
-}
-
-// Check if a string is a valid double
-bool is_valid_double(const std::string &s) {
-    size_t i = 0;
-    int len = s.length();
-    bool has_digits = false;
-    bool has_decimal = false;
-
-    if (len == 0) return false;
-
-    if (s[i] == '+' || s[i] == '-') i++;
-    if (i == len) return false;
-
-    while (i < len) {
-        if (isdigit(s[i])) {
-            has_digits = true;
-        } else if (s[i] == '.') {
-            if (has_decimal) return false;
-            has_decimal = true;
-            if (i + 1 >= len || !isdigit(s[i + 1])) return false;
-        } else {
+    if(str[0]=='+'||str[0]=='-') i++;
+    bool digitsBeforeDot = false;
+    while(i < len && str[i] != '.'){
+        if (!(str[i] >= '0' && str[i] <= '9')) {
             return false;
         }
+        digitsBeforeDot = true;
         i++;
     }
-
-    return has_digits;
-}
-
-// Add valid double strings using parse_number
-std::string add_string_doubles(const std::string &s1, const std::string &s2) {
-    double result = parse_number(s1) + parse_number(s2);
-    return std::to_string(result);
-}
-
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " <filename>\n";
-        return 1;
-    }
-
-    std::ifstream file(argv[1]);
-    if (!file.is_open()) {
-        std::cerr << "Could not open file: " << argv[1] << "\n";
-        return 1;
-    }
-
-    std::string line;
-    while (std::getline(file, line)) {
-        std::string num = trim(line);
-        if (is_valid_double(num)) {
-            std::string sum = add_string_doubles(num, "-123.456");
-            std::cout << "Valid: " << num << " + (-123.456) = " << sum << "\n";
-        } else {
-            std::cout << "Invalid number: " << num << "\n";
+    bool hasDot = false;
+    bool digitsAfterDot = false;
+    if(str[i]=='.'){
+        i++;
+        hasDot = true;
+        while(i <len){
+            if (!(str[i] >= '0' && str[i] <= '9')) {
+                return false;
+            }
+            digitsAfterDot = true;
+            i++;
         }
     }
-
-    file.close();
+    if(digitsAfterDot && !digitsBeforeDot) return false;
+    if(digitsBeforeDot && hasDot && !digitsAfterDot) return false;
+    if(!digitsBeforeDot && hasDot) return false;
+    return true;
+}
+int main(int argc, char *argv[]) {
+    if (argc != 2)
+    {
+        cout << "Please provide the input file." << endl;
+        exit(1);
+    }
+    
+    ifstream inFile;
+    inFile.open(argv[1]);
+    if (inFile.is_open())
+    {
+        string str;
+        while(std::getline(inFile, str))
+        {
+            if(!validDouble(str)){
+                cout<< str << " is invalid.\n";
+                continue;
+            }
+            double result = -123.456 + parse_number(str);
+            cout<< "Result of adding " << str << " with -123.456 = " << result<<endl;
+        }
+    }
+    else
+    {
+        cout << "Input file cannot be opened" << endl;
+        exit(1);
+    }
+    inFile.close();
     return 0;
+
 }
