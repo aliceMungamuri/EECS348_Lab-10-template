@@ -2,7 +2,7 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra
 
-TARGET = calculatorExec
+TARGET = calculator_exec
 OBJS = main.o calculator.o
 
 all: $(TARGET)
