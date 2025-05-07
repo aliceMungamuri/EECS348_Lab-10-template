@@ -1,28 +1,20 @@
-# Compiler
+# Makefile for Lab 10 - EECS 348
 CXX = g++
-# Compiler flags
-CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic
+CXXFLAGS = -std=c++17 -Wall -Wextra
 
-# Executable name
-TARGET = calculator_program
+TARGET = calculatorExec
+OBJS = main.o calculator.o
 
-# Source files
-SRCS = main.cpp calculator.cpp
-
-# Object files
-OBJS = $(SRCS:.cpp=.o)
-
-# Default rule: Build the program
 all: $(TARGET)
 
-# Linking step
-$(TARGET): $(SRCS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
 
-# Compile each .cpp to .o
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+main.o: main.cpp calculator.hpp
+	$(CXX) $(CXXFLAGS) -c main.cpp
 
-# Clean build files
+calculator.o: calculator.cpp calculator.hpp
+	$(CXX) $(CXXFLAGS) -c calculator.cpp
+
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f *.o $(TARGET)
